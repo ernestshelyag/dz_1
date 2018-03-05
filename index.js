@@ -1,8 +1,12 @@
 const fs = require('fs');
 const path = require('path');
+const stream = require('stream');
 
 const _console = process.argv;
 const abc = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+const randfolder = path.join(__dirname, 'randomFolder');
+
+let totalArr = [];
 
 function randWord() {
 
@@ -33,7 +37,14 @@ if(_console.length === 3 && _console[2] === 'random'){
 
 } else if(_console.length === 3 && _console[2] === 'build'){
 
-    prettifyFolder();
+    prettifyFolder(function (folderName) {
+
+        fs.readdirSync('./randomFolder/' + folderName).forEach(item => {
+
+            totalArr.push(item);
+
+        })
+    });
 
 } else {
     console.log('для содания рандомной папки введите команду - node index random');
@@ -56,11 +67,11 @@ function createMessFolder(callback) {
             fs.writeFile(`./randomFolder/${randWord()}.txt`, randWord(), function () {})
         }
 
-        fs.readdir(path.join(__dirname, 'randomFolder'), function (err, files){
+        fs.readdir(randfolder, function (err, files){
 
             files.forEach(item => {
 
-                let local = path.join(__dirname, 'randomFolder', item);
+                let local = path.join(randfolder, item);
                 let state = fs.statSync(local);
 
                 if (state.isDirectory()){
@@ -74,13 +85,60 @@ function createMessFolder(callback) {
 
     });
 
-    console.log('папка создана! для упорядочения ее по алфавиту введите команду node index build (пока не работает)')
+    console.log('папка создана! для упорядочения ее по алфавиту введите команду node index build')
 }
 
 // prettify folder -----------------------------------------------------------------------------------------------------
 
-function prettifyFolder() {
+function prettifyFolder(callback) {
 
-    console.log('start work');
+    fs.readdir(randfolder, function (err, files) {
+
+        files.forEach(item => {
+
+            let local = path.join(randfolder, item);
+            let state = fs.statSync(local);
+
+            if (state.isDirectory()){
+
+                callback(item);
+
+            } else {
+
+                totalArr.push(item);
+
+            }
+
+        });
+
+        //console.log(totalArr); // !!! yesss!
+
+        let fileReaded = fs.readFileSync(totalArr[3], 'utf8');
+
+        console.log(fileReaded);
+
+        // fs.mkdir('newFolder', function () {
+        //
+        //     abc.forEach(item => {
+        //
+        //         totalArr.forEach(el => {
+        //
+        //             if( item === el[0]){
+        //
+        //                 fs.mkdir('./newFolder/' + item , function () {
+        //
+        //                     console.log('done!');
+        //
+        //                 })
+        //
+        //             }
+        //
+        //         })
+        //
+        //     })
+        //
+        // });
+
+    });
 
 }
