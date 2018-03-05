@@ -111,33 +111,33 @@ function prettifyFolder(callback) {
 
         });
 
-        //console.log(totalArr); // !!! yesss!
+        //console.log(totalArr);
 
         let fileReaded = fs.readFileSync(totalArr[3], 'utf8');
 
         console.log(fileReaded);
 
-        // fs.mkdir('newFolder', function () {
-        //
-        //     abc.forEach(item => {
-        //
-        //         totalArr.forEach(el => {
-        //
-        //             if( item === el[0]){
-        //
-        //                 fs.mkdir('./newFolder/' + item , function () {
-        //
-        //                     console.log('done!');
-        //
-        //                 })
-        //
-        //             }
-        //
-        //         })
-        //
-        //     })
-        //
-        // });
+        fs.mkdir('newFolder', function () {
+
+            abc.forEach(item => {
+
+                totalArr.forEach(el => {
+
+                    if( item === el[0]){
+
+                        fs.mkdir('./newFolder/' + item , function () {
+
+                            console.log('done!');
+
+                        })
+
+                    }
+
+                })
+
+            })
+
+        });
 
     });
 
