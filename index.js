@@ -1,12 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const stream = require('stream');
 
 const _console = process.argv;
 const abc = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
-const randfolder = path.join(__dirname, 'randomFolder');
-
-let totalArr = [];
+const randFolder = path.join(__dirname, 'randomFolder');
+const psevdoFolder = path.join(__dirname, 'psevdoFolder');
 
 function randWord() {
 
@@ -20,7 +18,6 @@ function randWord() {
             })());
     }
     return arr.join('');
-
 }
 
 if(_console.length === 3 && _console[2] === 'random'){
@@ -37,11 +34,12 @@ if(_console.length === 3 && _console[2] === 'random'){
 
 } else if(_console.length === 3 && _console[2] === 'build'){
 
-    prettifyFolder(function (folderName) {
+    prettifyFolder( function (folderName) {
 
         fs.readdirSync('./randomFolder/' + folderName).forEach(item => {
-
-            totalArr.push(item);
+            
+            let file_readed = fs.readFileSync(path.join(randFolder, folderName, item), 'utf8');
+            fs.writeFileSync(path.join(psevdoFolder,item), file_readed);
 
         })
     });
@@ -55,36 +53,23 @@ if(_console.length === 3 && _console[2] === 'random'){
 function createMessFolder(callback) {
 
     fs.mkdir('randomFolder', function () {
-
         for(let i = Math.floor(Math.random()*5+4) ; i > 0 ; i-- ){
-
             fs.mkdir(`./randomFolder/${randWord()}`, function () {
-
             })
         }
-
         for( let i = Math.floor(Math.random()*5+4) ; i > 0 ; i-- ){
             fs.writeFile(`./randomFolder/${randWord()}.txt`, randWord(), function () {})
         }
-
-        fs.readdir(randfolder, function (err, files){
-
+        fs.readdir(randFolder, function (err, files){
             files.forEach(item => {
-
-                let local = path.join(randfolder, item);
+                let local = path.join(randFolder, item);
                 let state = fs.statSync(local);
-
                 if (state.isDirectory()){
-
                     callback(item);
                 }
-
             });
-
         });
-
     });
-
     console.log('папка создана! для упорядочения ее по алфавиту введите команду node index build')
 }
 
@@ -92,11 +77,13 @@ function createMessFolder(callback) {
 
 function prettifyFolder(callback) {
 
-    fs.readdir(randfolder, function (err, files) {
+    fs.readdir(randFolder, function (err, files) {
+
+        fs.mkdirSync('psevdoFolder');
 
         files.forEach(item => {
 
-            let local = path.join(randfolder, item);
+            let local = path.join(randFolder, item);
             let state = fs.statSync(local);
 
             if (state.isDirectory()){
@@ -105,40 +92,42 @@ function prettifyFolder(callback) {
 
             } else {
 
-                totalArr.push(item);
+                let file_readed = fs.readFileSync(path.join(randFolder, item), 'utf8');
+                fs.writeFileSync(path.join(psevdoFolder,item), file_readed);
 
             }
-
         });
+    });
+    sortFolder();
+}
 
-        //console.log(totalArr);
+function sortFolder() {
 
-        let fileReaded = fs.readFileSync(totalArr[3], 'utf8');
+    fs.mkdir('sortFolder', function () {
 
-        console.log(fileReaded);
+        fs.readdir(psevdoFolder, function (err, files) {
 
-        fs.mkdir('newFolder', function () {
+            files.forEach(el => {
 
-            abc.forEach(item => {
+                abc.forEach(abcItem => {
 
-                totalArr.forEach(el => {
+                    if( abcItem === el[0] ){
 
-                    if( item === el[0]){
+                        fs.mkdir(path.join('./sortFolder', abcItem), function () {
 
-                        fs.mkdir('./newFolder/' + item , function () {
-
-                            console.log('done!');
+                            let file_readed = fs.readFileSync(path.join('./psevdoFolder', el), 'utf8');
+                            fs.writeFileSync(path.join('./sortFolder', abcItem, el), file_readed);
 
                         })
 
                     }
 
-                })
+                });
 
             })
 
-        });
+        })
 
     });
-
+    console.log('восхитительно! отсортированные файлы лежат в папке sortFolder');
 }
