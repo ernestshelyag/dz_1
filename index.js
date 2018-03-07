@@ -42,7 +42,10 @@ function createMessFolder (callback) {
     for (let i = Math.floor(Math.random() * 5 + 4); i > 0; i--) {
       fs.writeFile(`./randomFolder/${randWord()}.txt`, randWord(), function () {});
     }
-    fs.readdir(randFolder, function (err, files){
+    fs.readdir(randFolder, function (err, files) {
+      if (err) {
+        console.log('error!');
+      }
       files.forEach(item => {
         let local = path.join(randFolder, item);
         let state = fs.statSync(local);
@@ -59,8 +62,10 @@ function createMessFolder (callback) {
 
 function prettifyFolder (callback) {
   fs.readdir(randFolder, function (err, files) {
+    if (err) {
+      console.log('error!');
+    }
     fs.mkdirSync('psevdoFolder');
-
     files.forEach(item => {
       let local = path.join(randFolder, item);
       let state = fs.statSync(local);
@@ -79,6 +84,9 @@ function prettifyFolder (callback) {
 function sortFolder () {
   fs.mkdir('sortFolder', function () {
     fs.readdir(psevdoFolder, function (err, files) {
+      if (err) {
+        console.log('error!');
+      }
       files.forEach(el => {
         abc.forEach(abcItem => {
           if (abcItem === el[0]) {
