@@ -2,132 +2,98 @@ const fs = require('fs');
 const path = require('path');
 
 const _console = process.argv;
-const abc = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+const abc = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 const randFolder = path.join(__dirname, 'randomFolder');
 const psevdoFolder = path.join(__dirname, 'psevdoFolder');
 
-function randWord() {
-
-    let arr = [];
-    for( let i = Math.floor(Math.random()*5+4) ; i > 0 ; i-- ){
-        arr.push((()=>{
-
-            let j = Math.floor( Math.random() * abc.length);
-            return abc[j];
-
-            })());
-    }
-    return arr.join('');
+function randWord () {
+  let arr = [];
+  for (let i = Math.floor(Math.random() * 5 + 4); i > 0; i--) {
+    arr.push((() => {
+      let j = Math.floor(Math.random() * abc.length);
+      return abc[j];
+    })());
+  }
+  return arr.join('');
 }
 
-if(_console.length === 3 && _console[2] === 'random'){
-
-    createMessFolder( function (folderName) {
-
-        fs.writeFile(`./randomFolder/${folderName}/${randWord()}.txt`, randWord(), function () {});
-
-        for( let i = Math.floor(Math.random()*3+2) ; i > 0 ; i-- ){
-            fs.writeFile(`./randomFolder/${folderName}/${randWord()}.txt`, randWord(), function () {});
-        }
-
+if (_console.length === 3 && _console[2] === 'random') {
+  createMessFolder(function (folderName) {
+    fs.writeFile(`./randomFolder/${folderName}/${randWord()}.txt`, randWord(), function () {});
+    for (let i = Math.floor(Math.random() * 3 + 2); i > 0; i--) {
+      fs.writeFile(`./randomFolder/${folderName}/${randWord()}.txt`, randWord(), function () {});
+    }
+  });
+} else if (_console.length === 3 && _console[2] === 'build') {
+  prettifyFolder(function (folderName) {
+    fs.readdirSync('./randomFolder/' + folderName).forEach(item => {
+      let fileReaded = fs.readFileSync(path.join(randFolder, folderName, item), 'utf8');
+      fs.writeFileSync(path.join(psevdoFolder, item), fileReaded);
     });
-
-} else if(_console.length === 3 && _console[2] === 'build'){
-
-    prettifyFolder( function (folderName) {
-
-        fs.readdirSync('./randomFolder/' + folderName).forEach(item => {
-            
-            let file_readed = fs.readFileSync(path.join(randFolder, folderName, item), 'utf8');
-            fs.writeFileSync(path.join(psevdoFolder,item), file_readed);
-
-        })
-    });
-
+  });
 } else {
-    console.log('для содания рандомной папки введите команду - node index random');
+  console.log('для содания рандомной папки введите команду - node index random');
 }
 
 // create folder -------------------------------------------------------------------------------------------------------
 
-function createMessFolder(callback) {
-
-    fs.mkdir('randomFolder', function () {
-        for(let i = Math.floor(Math.random()*5+4) ; i > 0 ; i-- ){
-            fs.mkdir(`./randomFolder/${randWord()}`, function () {
-            })
+function createMessFolder (callback) {
+  fs.mkdir('randomFolder', function () {
+    for (let i = Math.floor(Math.random() * 5 + 4); i > 0; i--) {
+      fs.mkdir(`./randomFolder/${randWord()}`, function () {});
+    }
+    for (let i = Math.floor(Math.random() * 5 + 4); i > 0; i--) {
+      fs.writeFile(`./randomFolder/${randWord()}.txt`, randWord(), function () {});
+    }
+    fs.readdir(randFolder, function (err, files){
+      files.forEach(item => {
+        let local = path.join(randFolder, item);
+        let state = fs.statSync(local);
+        if (state.isDirectory()) {
+          callback(item);
         }
-        for( let i = Math.floor(Math.random()*5+4) ; i > 0 ; i-- ){
-            fs.writeFile(`./randomFolder/${randWord()}.txt`, randWord(), function () {})
-        }
-        fs.readdir(randFolder, function (err, files){
-            files.forEach(item => {
-                let local = path.join(randFolder, item);
-                let state = fs.statSync(local);
-                if (state.isDirectory()){
-                    callback(item);
-                }
-            });
-        });
+      });
     });
-    console.log('папка создана! для упорядочения ее по алфавиту введите команду node index build')
+  });
+  console.log('папка создана! для упорядочения ее по алфавиту введите команду node index build');
 }
 
 // prettify folder -----------------------------------------------------------------------------------------------------
 
-function prettifyFolder(callback) {
+function prettifyFolder (callback) {
+  fs.readdir(randFolder, function (err, files) {
+    fs.mkdirSync('psevdoFolder');
 
-    fs.readdir(randFolder, function (err, files) {
+    files.forEach(item => {
+      let local = path.join(randFolder, item);
+      let state = fs.statSync(local);
 
-        fs.mkdirSync('psevdoFolder');
+      if (state.isDirectory()) {
+        callback(item);
+      } else {
+        let fileReaded = fs.readFileSync(path.join(randFolder, item), 'utf8');
+        fs.writeFileSync(path.join(psevdoFolder, item), fileReaded);
+      }
+    });
+  });
+  sortFolder();
+}
 
-        files.forEach(item => {
-
-            let local = path.join(randFolder, item);
-            let state = fs.statSync(local);
-
-            if (state.isDirectory()){
-
-                callback(item);
-
-            } else {
-
-                let file_readed = fs.readFileSync(path.join(randFolder, item), 'utf8');
-                fs.writeFileSync(path.join(psevdoFolder,item), file_readed);
-
-            }
+function sortFolder () {
+  fs.mkdir('sortFolder', function () {
+    fs.readdir(psevdoFolder, function (err, files) {
+      files.forEach(el => {
+        abc.forEach(abcItem => {
+          if (abcItem === el[0]) {
+            fs.mkdir(path.join('./sortFolder', abcItem), function () {
+              let fileReaded = fs.readFileSync(path.join('./psevdoFolder', el), 'utf8');
+              fs.writeFileSync(path.join('./sortFolder', abcItem, el), fileReaded);
+            });
+          }
         });
+      });
     });
-    sortFolder();
+  });
+  console.log('восхитительно! отсортированные файлы лежат в папке sortFolder');
 }
 
-function sortFolder() {
-
-    fs.mkdir('sortFolder', function () {
-
-        fs.readdir(psevdoFolder, function (err, files) {
-
-            files.forEach(el => {
-
-                abc.forEach(abcItem => {
-
-                    if( abcItem === el[0] ){
-
-                        fs.mkdir(path.join('./sortFolder', abcItem), function () {
-
-                            let file_readed = fs.readFileSync(path.join('./psevdoFolder', el), 'utf8');
-                            fs.writeFileSync(path.join('./sortFolder', abcItem, el), file_readed);
-
-                        })
-
-                    }
-
-                });
-
-            })
-
-        })
-
-    });
-    console.log('восхитительно! отсортированные файлы лежат в папке sortFolder');
-}
