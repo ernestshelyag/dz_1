@@ -9,10 +9,7 @@ const psevdoFolder = path.join(__dirname, 'psevdoFolder');
 function randWord () {
   let arr = [];
   for (let i = Math.floor(Math.random() * 5 + 4); i > 0; i--) {
-    arr.push((() => {
-      let j = Math.floor(Math.random() * abc.length);
-      return abc[j];
-    })());
+    arr.push(abc[Math.floor(Math.random() * abc.length)]);
   }
   return arr.join('');
 }
