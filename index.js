@@ -17,11 +17,6 @@ function randWord () {
 
 if (_console.length === 3 && _console[2] === 'random') {
   createMessFolder(function (folderName) {
-    fs.writeFile(`./randomFolder/${folderName}/${randWord()}.txt`, randWord(), function (err) {
-      if (err) {
-        console.log('error!');
-      }
-    });
     for (let i = rand; i > 0; i--) {
       fs.writeFile(`./randomFolder/${folderName}/${randWord()}.txt`, randWord(), function (err) {
         if (err) {
