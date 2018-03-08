@@ -5,10 +5,11 @@ const _console = process.argv;
 const abc = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 const randFolder = path.join(__dirname, 'randomFolder');
 const psevdoFolder = path.join(__dirname, 'psevdoFolder');
+const rand = Math.floor(Math.random() * 5 + 4);
 
 function randWord () {
   let arr = [];
-  for (let i = Math.floor(Math.random() * 5 + 4); i > 0; i--) {
+  for (let i = rand; i > 0; i--) {
     arr.push(abc[Math.floor(Math.random() * abc.length)]);
   }
   return arr.join('');
@@ -16,9 +17,17 @@ function randWord () {
 
 if (_console.length === 3 && _console[2] === 'random') {
   createMessFolder(function (folderName) {
-    fs.writeFile(`./randomFolder/${folderName}/${randWord()}.txt`, randWord(), function () {});
-    for (let i = Math.floor(Math.random() * 3 + 2); i > 0; i--) {
-      fs.writeFile(`./randomFolder/${folderName}/${randWord()}.txt`, randWord(), function () {});
+    fs.writeFile(`./randomFolder/${folderName}/${randWord()}.txt`, randWord(), function (err) {
+      if (err) {
+        console.log('error!');
+      }
+    });
+    for (let i = rand; i > 0; i--) {
+      fs.writeFile(`./randomFolder/${folderName}/${randWord()}.txt`, randWord(), function (err) {
+        if (err) {
+          console.log('error!');
+        }
+      });
     }
   });
 } else if (_console.length === 3 && _console[2] === 'build') {
@@ -36,11 +45,19 @@ if (_console.length === 3 && _console[2] === 'random') {
 
 function createMessFolder (callback) {
   fs.mkdir('randomFolder', function () {
-    for (let i = Math.floor(Math.random() * 5 + 4); i > 0; i--) {
-      fs.mkdir(`./randomFolder/${randWord()}`, function () {});
+    for (let i = rand; i > 0; i--) {
+      fs.mkdir(`./randomFolder/${randWord()}`, function (err) {
+        if (err) {
+          console.log('error!');
+        }
+      });
     }
-    for (let i = Math.floor(Math.random() * 5 + 4); i > 0; i--) {
-      fs.writeFile(`./randomFolder/${randWord()}.txt`, randWord(), function () {});
+    for (let i = rand; i > 0; i--) {
+      fs.writeFile(`./randomFolder/${randWord()}.txt`, randWord(), function (err) {
+        if (err) {
+          console.log('error!');
+        }
+      });
     }
     fs.readdir(randFolder, function (err, files) {
       if (err) {
