@@ -113,4 +113,3 @@ function sortFolder () {
   });
   console.log('восхитительно! отсортированные файлы лежат в папке sortFolder');
 }
-
